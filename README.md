@@ -7,7 +7,7 @@ These steps will get the Celery worker running on your laptop so we can process 
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/<YOUR_USERNAME>/CompSci_421_GroupProject.git
+git clone https://github.com/Lehoa02/CompSci_421_GroupProject.git
 cd CompSci_421_GroupProject
 ```
 
