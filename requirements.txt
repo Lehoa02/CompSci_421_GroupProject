@@ -3,3 +3,5 @@ redis==5.0.1
 numpy
 librosa
 soundfile
+flask
+aiohttp

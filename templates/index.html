@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio Feature Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Optional: nicer font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page">
+    <header>
+        <div class="title-block">
+            <h1>Audio Feature Dashboard</h1>
+            <p>Celery workers analyze each WAV file and extract spectral features. This view lets us quickly inspect how each track sounds.</p>
+            <div class="badge-row">
+                <span class="badge">
+                    <span class="badge-dot"></span>
+                    Celery + Redis
+                </span>
+                <span class="badge">DFT-based features</span>
+                <span class="badge">Distributed processing</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="controls">
+                <label for="sort-select">Sort by</label>
+                <div class="select">
+                    <select id="sort-select">
+                        <option value="none">Original order</option>
+                        <option value="brightness-desc">Brightness (high → low)</option>
+                        <option value="brightness-asc">Brightness (low → high)</option>
+                        <option value="loudness-desc">Loudness (high → low)</option>
+                        <option value="loudness-asc">Loudness (low → high)</option>
+                    </select>
+                </div>
+                <span class="pill" id="file-count">0 files</span>
+            </div>
+            <form id="upload-form" class="upload-form">
+                <label for="file-input" class="upload-label">
+                    Upload audio
+                </label>
+                <input id="file-input" type="file" accept=".wav,.mp3,.flac,.ogg" class="upload-input">
+                <button type="submit" class="upload-button">Upload &amp; Analyze</button>
+                <span id="upload-status" class="upload-status"></span>
+            </form>
+        </div>
+    </header>
+
+    <!-- NEW: feature explanations panel -->
+    <section class="info-panel">
+        <button id="info-toggle" class="info-toggle">
+            What do these features mean?
+        </button>
+        <div id="info-body" class="info-body">
+            <div class="info-row">
+                <h3>Spectral centroid (brightness)</h3>
+                <p>
+                    Roughly the “center of mass” of the spectrum. Higher values mean more energy in the
+                    high frequencies, so the sound is perceived as <strong>brighter</strong> or more “treble-heavy”.
+                    We map this to the <strong>Dark / Neutral / Bright</strong> tag.
+                </p>
+            </div>
+            <div class="info-row">
+                <h3>Spectral bandwidth (complexity)</h3>
+                <p>
+                    Measures how wide the spectrum is around the centroid. A wide bandwidth means the sound
+                    spreads across many frequencies, which feels more <strong>complex</strong>. Narrow bandwidth feels
+                    more <strong>simple</strong> or tone-like. This drives the <strong>Simple / Complex</strong> tag.
+                </p>
+            </div>
+            <div class="info-row">
+                <h3>RMS energy (loudness)</h3>
+                <p>
+                    RMS (root-mean-square) energy is a measure of average power over time. Higher RMS values
+                    correspond to higher perceived <strong>loudness</strong>, which we show as the
+                    <strong>Quiet / Loud</strong> tag and the blue bar in each card.
+                </p>
+            </div>
+            <div class="info-row">
+                <h3>Tags on each card</h3>
+                <ul>
+                    <li><strong>Brightness tag</strong>: based on spectral centroid thresholds (Dark, Neutral, Bright).</li>
+                    <li><strong>Complexity tag</strong>: based on spectral bandwidth (Simple or Complex).</li>
+                    <li><strong>Loudness tag</strong>: based on RMS energy (Quiet or Loud).</li>
+                </ul>
+                <p>
+                    Together these give a quick “vibe summary” of each track at a glance.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div id="grid" class="grid"></div>
+    <div id="empty-state" class="empty-state">
+        No features found. Run <code>python submit_jobs.py</code> to generate <code>dft_features.csv</code>, then refresh this page.
+    </div>
+</div>
+
+<!-- Our JS -->
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
