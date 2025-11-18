@@ -30,7 +30,7 @@ pip install -r requirements.txt
 
 ## 4. Update Redis URL in celery_app.py
 
-Ask me for my laptop’s local IP address
+My laptop’s local IP address: 143.200.36.6
 Then edit the file:
 
 ```bash
@@ -51,9 +51,38 @@ If it works, you will see:
 ```
 Leave this terminal open — it is your Celery worker.
 
-## 6. Let me run the job submitter
+## 6. How we use async processing
+There are two ways we send work to your worker:
 
+6.1. Async batch submitter (uses asyncio + aiohttp)
+
+I can run:
+```bash
+python async_submit.py
+```
+This script:
+
+-finds all .wav files in data/audio/
+
+-uses aiohttp + asyncio.gather to upload them concurrently to the Flask /upload endpoint
+
+-each upload triggers a Celery task on your worker (compute_dft_features)
+
+-results are written into dft_features.csv and shown on the dashboard
+
+You’ll see tasks appear in your worker terminal as they are processed in parallel.
+
+6.2. (Optional) Synchronous submitter
 ```bash
 python submit_jobs.py
 ```
-You should see tasks show up in your worker window as they are processed.
+This still uses Celery, but submits files one by one and waits for each result.
+We mainly keep it to show the difference vs. the async version.
+
+---
+
+## Bonus
+The website of free music .wav format: 
+```bash
+https://cambridge-mt.com/ms3/mtk/
+```
